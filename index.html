@@ -104,6 +104,11 @@
 <section id="v-charts" class="hidden">
   <div class="panel">
     <div class="chartsel"><select id="chartSel"></select><button class="mini" id="chartPractice">Practice just this verb ▸</button></div>
+    <div class="vp hidden" id="vpPanel">
+      <h3>Which conjugations do you want to practise for this verb?</h3>
+      <div class="chips" id="vpChips"></div>
+      <div class="vp-bar"><span class="vp-info" id="vpInfo"></span><span class="tools"><button class="mini" data-vp="all">All</button><button class="mini" data-vp="none">None</button></span><button class="big blue" id="vpStart">Start ▸</button></div>
+    </div>
     <div id="chartOut"></div>
     <p class="note">Spellings use modern unvocalized Hebrew (ktiv male), as you'd see it in Israel; common alternate spellings are accepted too. In the future and imperative, everyday Hebrew uses the masculine plural form for the feminine plural; the formal -nah forms are shown greyed out and are only drilled if you turn on "Formal feminine plural".</p>
   </div>

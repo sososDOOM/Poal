@@ -12,7 +12,7 @@ export function renderChartSel() {
     DB.verbs.filter(v => v.g === g.id).forEach(v => { const o = document.createElement("option"); o.value = v.id; o.textContent = `${v.inf} — ${v.en}`; og.appendChild(o); });
     if (og.children.length) sel.appendChild(og);
   });
-  sel.onchange = () => renderChart(sel.value);
+  sel.onchange = () => { vpSel = null; renderChart(sel.value); };
   renderChart(DB.verbs[0].id);
 }
 /** Re-draw the chart for the selected verb (after the vowels setting changes). */
@@ -45,11 +45,42 @@ function renderChart(id) {
     h += table(tid, `${d.name} · ${d.he}`, rows, "");
   });
   $("chartOut").innerHTML = h + "</div>";
+  renderVp();
 }
 
-/** All drillable questions for the verb currently shown in the chart. */
+// ---- "Practice just this verb": mini picker for which drills to include ----
+let vpSel = null; // Set of drill ids; null = all the verb's drills (reset when the verb changes)
+const vpDrills = v => DRILLS.filter(d => hasDrill(v, d.id));
+const vpCount = (v, id) => prompts(id).filter((p, pi) => !isFormal(p) && isAvailable(v, id, pi)).length;
+
+function renderVp() {
+  const v = DB.byId.get($("chartSel").value), drills = vpDrills(v);
+  if (!vpSel) vpSel = new Set(drills.map(d => d.id));
+  const box = $("vpChips"); box.innerHTML = "";
+  drills.forEach(d => {
+    const b = document.createElement("button"); b.className = "chip" + (vpSel.has(d.id) ? " on" : "");
+    b.innerHTML = `<span class="h">${d.he}</span>${d.name}<span class="ex">${vpCount(v, d.id)}</span>`;
+    b.onclick = () => { vpSel.has(d.id) ? vpSel.delete(d.id) : vpSel.add(d.id); b.classList.toggle("on"); updateVp(); };
+    box.appendChild(b);
+  });
+  updateVp();
+}
+function updateVp() {
+  const n = chartPool().length;
+  $("vpInfo").textContent = n ? `${n} questions` : "Pick at least one drill.";
+  $("vpStart").disabled = !n;
+}
+export function wireVerbPractice(startFn) {
+  $("chartPractice").onclick = () => { const p = $("vpPanel"); p.classList.toggle("hidden"); if (!p.classList.contains("hidden")) renderVp(); };
+  $("vpStart").onclick = () => startFn(chartPool());
+  document.querySelectorAll("[data-vp]").forEach(b => b.onclick = () => {
+    const v = DB.byId.get($("chartSel").value); vpSel = new Set(b.dataset.vp === "all" ? vpDrills(v).map(d => d.id) : []); renderVp();
+  });
+}
+
+/** Drillable questions for the verb shown in the chart, limited to the drills ticked in the mini picker. */
 export function chartPool() {
   const v = DB.byId.get($("chartSel").value), items = [];
-  DRILLS.forEach(d => prompts(d.id).forEach((p, pi) => { if (!isFormal(p) && isAvailable(v, d.id, pi)) items.push({ v, t: d.id, pi }); }));
+  DRILLS.filter(d => !vpSel || vpSel.has(d.id)).forEach(d => prompts(d.id).forEach((p, pi) => { if (!isFormal(p) && isAvailable(v, d.id, pi)) items.push({ v, t: d.id, pi }); }));
   return items;
 }

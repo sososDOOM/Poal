@@ -79,8 +79,8 @@ header{display:flex;align-items:center;justify-content:space-between;gap:12px;fl
 .stat.timer .v.low{color:var(--bad)}
 .hud .sp{flex:1}
 .quit{border:1.5px solid var(--line);background:var(--card);border-radius:12px;padding:0 16px;font-weight:600;color:var(--ink2)}
-.qcard{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px 22px 22px;text-align:center;position:relative;overflow:hidden}
-.qcard:before{content:"";position:absolute;inset:0 0 auto 0;height:5px;background:linear-gradient(90deg,var(--accent),var(--gold))}
+.qcard{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px 22px 22px;text-align:center;position:relative;}
+.qcard:before{content:"";position:absolute;inset:0 0 auto 0;height:5px;border-radius:18px 18px 0 0;background:linear-gradient(90deg,var(--accent),var(--gold))}
 .verbline{display:flex;justify-content:center;align-items:baseline;gap:12px;flex-wrap:wrap}
 .verbline .inf{font-family:var(--font-he);font-size:40px;font-weight:900;direction:rtl}
 .verbline .en{color:var(--ink2);font-size:16px}
@@ -188,13 +188,31 @@ details.group .chips{margin-top:2px}
 /* ---- Button motion: hover pop + click ripple (applies to every <button>, present and future) ---- */
 button{position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent;
   transition:transform var(--pop-ms) cubic-bezier(.2,.8,.3,1.2),background-color var(--pop-ms) ease,border-color var(--pop-ms) ease,color var(--pop-ms) ease,box-shadow var(--pop-ms) ease}
-button:not(:disabled):hover{transform:scale(var(--pop));background-color:var(--logo);border-color:var(--logo);color:#fff;box-shadow:0 8px 20px rgba(162,93,57,.35);z-index:1}
-button:not(:disabled):hover :is(.h,.ex,.count){color:inherit}
+button:not(:disabled):not(.clicked):hover{transform:scale(var(--pop));background-color:var(--logo);border-color:var(--logo);color:#fff;box-shadow:0 8px 20px rgba(162,93,57,.35);z-index:1}
+button:not(:disabled):not(.clicked):hover :is(.h,.ex,.count){color:inherit}
 button:not(:disabled):active{transform:scale(.97);transition-duration:.08s}
 button:focus-visible{outline:2px solid var(--logo);outline-offset:2px}
 .ripple{position:absolute;border-radius:50%;pointer-events:none;background:rgba(255,255,255,.55);transform:scale(0);opacity:1;animation:ripple .65s ease-out forwards}
 @keyframes ripple{to{transform:scale(1);opacity:0}}
 @media (prefers-reduced-motion:reduce){
-  button,button:not(:disabled):hover{transition:none;transform:none}
+  button,button:not(:disabled):not(.clicked):hover{transition:none;transform:none}
   .ripple{display:none}
 }
+
+/* ---- Hover bubble: transliteration of the verb being conjugated ---- */
+.verbline .inf[data-tl]{position:relative;cursor:help}
+.verbline .inf[data-tl]::after{content:attr(data-tl);position:absolute;left:50%;bottom:calc(100% + 12px);transform:translate(-50%,6px) scale(.9);transform-origin:50% 100%;
+  background:var(--card);color:var(--ink);border:2.5px solid var(--ink);border-radius:12px;padding:5px 16px;white-space:nowrap;
+  font-family:var(--font-ui);font-style:italic;font-size:18px;font-weight:500;direction:ltr;
+  opacity:0;pointer-events:none;transition:opacity .18s ease,transform .22s cubic-bezier(.2,.8,.3,1.2);z-index:5}
+.verbline .inf[data-tl]::before{content:"";position:absolute;left:50%;bottom:calc(100% + 5px);width:12px;height:12px;background:var(--card);border:solid var(--ink);border-width:0 2.5px 2.5px 0;
+  transform:translate(-50%,6px) rotate(45deg);opacity:0;pointer-events:none;transition:opacity .18s ease,transform .22s cubic-bezier(.2,.8,.3,1.2);z-index:6}
+.verbline .inf[data-tl]:hover::after{opacity:1;transform:translate(-50%,0) scale(1)}
+.verbline .inf[data-tl]:hover::before{opacity:1;transform:translate(-50%,0) rotate(45deg)}
+
+/* ---- Mini picker for "Practice just this verb" ---- */
+.vp{margin-top:14px;padding:14px;border:1.5px solid var(--line);border-radius:12px;background:var(--paper)}
+.vp h3{margin:0 0 10px;font-size:14px;font-weight:600;color:var(--ink2)}
+.vp-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+.vp-bar .vp-info{color:var(--ink2);font-size:13px;margin-right:auto}
+.vp-bar .tools{display:flex;gap:6px}

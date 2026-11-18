@@ -3,6 +3,8 @@ import { $, rand } from "./util.js";
 import { S } from "./state.js";
 import { drillById, prompt, answers, cue, vocalisedFor } from "./drills.js";
 import { pronHtml } from "./pron.js";
+import { transliterateAll } from "./translit.js";
+import { DB } from "./data.js";
 import { norm, mapKeys } from "./hebrew.js";
 import { matchesMeaning } from "./english.js";
 import { esc } from "./util.js";
@@ -44,6 +46,7 @@ function next() {
   G.cur = q; G.answered = false;
   const p = prompt(q), drill = drillById(q.t), c = cue(q, S);
   $("qInf").textContent = c.main;
+  setTip($("qInf"), q);
   $("qEn").textContent = c.en;
   $("qMeta").textContent = c.meta;
   const te = $("qTense"); te.className = "tense " + q.t; te.textContent = `${drill.name} · ${drill.he}`;
@@ -58,6 +61,11 @@ function next() {
   if (meaning || !S.kb || window.matchMedia("(pointer:fine)").matches) a.focus();
 }
 
+/** Hover bubble on the headword: its transliteration (always available, independent of the vowels setting). Not shown in the infinitive drill, where the headword is the root and the infinitive is the answer. */
+function setTip(el, q) {
+  const voc = DB.voc?.[q.v.id], form = q.v.hasInf ? voc?.infinitive : voc?.past?.["3ms"];
+  if (q.t !== "infinitive" && form) el.dataset.tl = transliterateAll(form); else delete el.dataset.tl;
+}
 const isMeaning = q => drillById(q.t).kind === "meaning";
 
 function check() {

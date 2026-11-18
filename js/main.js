@@ -7,7 +7,7 @@ import { renderSetup, wireSetup, pool } from "./setup.js";
 import { start, wireGame, getGame, isGameActive, abandonGame } from "./game.js";
 import { missedPool } from "./results.js";
 import { buildKeyboard } from "./keyboard.js";
-import { renderChartSel, chartPool, refreshChart } from "./charts.js";
+import { renderChartSel, refreshChart, wireVerbPractice } from "./charts.js";
 import { loadVocalised } from "./data.js";
 import { S } from "./state.js";
 import { wireRipple } from "./ripple.js";
@@ -20,14 +20,14 @@ async function init() {
   }
   wireRipple();
   initState();
-  if (S.vowels !== "off") await loadVocalised();
+  loadVocalised(); // always: the hover bubble on the infinitive needs the vowelled forms (small file, loads in the background)
   wireSetup(); wireGame(); buildKeyboard(getGame);
 
   $("startBtn").onclick = () => start();
   $("againBtn").onclick = () => { const G = getGame(); start(G && G.custom ? G.items : null); };
   $("missedBtn").onclick = () => start(missedPool(getGame()));
   $("setupBtn").onclick = () => { show("setup"); renderSetup(); };
-  $("chartPractice").onclick = () => start(chartPool());
+  wireVerbPractice(start);
   $("tab-practice").onclick = () => { if (isGameActive()) return; show("setup"); renderSetup(); };
   $("tab-charts").onclick = () => { if (isGameActive()) abandonGame(); show("charts"); refreshChart(); };
 
