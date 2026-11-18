@@ -193,10 +193,13 @@ button:not(:disabled):not(.clicked):hover :is(.h,.ex,.count){color:inherit}
 button:not(:disabled):active{transform:scale(.97);transition-duration:.08s}
 button:focus-visible{outline:2px solid var(--logo);outline-offset:2px}
 .ripple{position:absolute;border-radius:50%;pointer-events:none;background:rgba(255,255,255,.55);transform:scale(0);opacity:1;animation:ripple .65s ease-out forwards}
+button.clicked{animation:click-pulse .38s cubic-bezier(.2,.8,.3,1) 1}
+@keyframes click-pulse{0%{transform:scale(var(--pop))}35%{transform:scale(1.16)}100%{transform:scale(1)}}
 @keyframes ripple{to{transform:scale(1);opacity:0}}
 @media (prefers-reduced-motion:reduce){
   button,button:not(:disabled):not(.clicked):hover{transition:none;transform:none}
   .ripple{display:none}
+  button.clicked{animation:none}
 }
 
 /* ---- Hover bubble: transliteration of the verb being conjugated ---- */

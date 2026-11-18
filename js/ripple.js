@@ -1,5 +1,5 @@
 // Click ripple for every <button> (delegated, so buttons added later work automatically).
-// Also cancels the hover "pop" once a button is clicked, until the mouse leaves it (class .clicked).
+// Also marks a clicked button (class .clicked): it pulses bigger and settles back to normal size, and stays un-popped until the mouse leaves.
 // Styling lives in css/style.css (.ripple, button.clicked).
 let last = null; // where the last click happened, so a button re-created under the cursor stays "clicked"
 const near = (e, p) => p && Math.hypot(e.clientX - p.x, e.clientY - p.y) < 4;
@@ -9,6 +9,7 @@ export function wireRipple() {
     const b = e.target.closest && e.target.closest("button");
     if (!b || b.disabled) return;
     last = { x: e.clientX, y: e.clientY };
+    b.classList.remove("clicked"); void b.offsetWidth; // restart the pulse animation on repeat clicks
     b.classList.add("clicked");
     const r = b.getBoundingClientRect();
     const size = Math.max(r.width, r.height) * 2.2;
