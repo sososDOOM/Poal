@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>אנחנו מטים — Hebrew Conjugation Practice</title>
+<link rel="icon" type="image/png" href="img/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand">
+    <img class="logo" src="img/icon.png" alt="">
+    <div><h1 class="he">אנחנו מטים</h1><p>Hebrew verb conjugation practice</p></div>
+  </div>
+  <nav class="tabs">
+    <button id="tab-practice" class="on">Practice</button>
+    <button id="tab-charts">Verb charts</button>
+  </nav>
+</header>
+
+<!-- SETUP -->
+<section id="v-setup">
+  <div class="panel">
+    <h2>1 · Choose binyanim <span class="tools"><button class="mini" data-all="1">Select all</button><button class="mini" data-all="0">Clear</button></span></h2>
+    <div class="chips binyan" id="binyanChips"></div>
+    <p class="note">Each binyan includes all its verbs, regular and weak-root. You get a random mix.</p>
+  </div>
+  <div class="panel">
+    <h2>2 · Choose what to practice</h2>
+    <div class="chips" id="tenseChips"></div>
+    <p class="note">Tip: the <b>Meaning</b> drill asks you to type the English. Turn off “Show English meaning” below so you only see a verb's meaning when you're tested on it.</p>
+  </div>
+  <div class="panel">
+    <h2>3 · Options</h2>
+    <div class="row">
+      <div class="opt"><label class="t">Time limit</label><div class="seg" id="segTime"></div></div>
+      <div class="opt"><label class="t">Vowels &amp; pronunciation (with answers and in charts)</label><div class="seg" id="segVowels"></div></div>
+      <div class="opt" id="countOpt"><label class="t">Number of questions</label><div class="seg" id="segCount"></div></div>
+    </div>
+    <div class="toggles">
+      <label class="tog"><input type="checkbox" id="optEnglish" checked><span class="sw"></span>Show English meaning</label>
+      <label class="tog"><input type="checkbox" id="optRoot"><span class="sw"></span>Show binyan &amp; root</label>
+      <label class="tog"><input type="checkbox" id="optKb" checked><span class="sw"></span>On-screen Hebrew keyboard</label>
+      <label class="tog"><input type="checkbox" id="optLenient"><span class="sw"></span>Lenient spelling (ignore ו / י)</label>
+      <label class="tog"><input type="checkbox" id="optFormal"><span class="sw"></span>Formal feminine plural (תכתובנה)</label>
+    </div>
+  </div>
+  <div class="startbar">
+    <div class="info" id="startInfo"></div>
+    <button class="big" id="startBtn">Start ▸</button>
+  </div>
+</section>
+
+<!-- GAME -->
+<section id="v-game" class="hidden">
+  <div class="hud">
+    <div class="stat timer"><div class="k" id="tLabel">Time</div><div class="v" id="tVal">—</div></div>
+    <div class="stat"><div class="k">Correct</div><div class="v" id="sCorrect">0</div></div>
+    <div class="stat"><div class="k">Attempted</div><div class="v" id="sTotal">0</div></div>
+    <div class="stat"><div class="k">Streak</div><div class="v" id="sStreak">0</div></div>
+    <div class="sp"></div>
+    <button class="quit" id="quitBtn">Finish</button>
+  </div>
+  <div class="qcard">
+    <div class="verbline"><span class="inf" id="qInf"></span><span class="en" id="qEn"></span></div>
+    <div class="meta" id="qMeta"></div>
+    <div class="prompt"><span class="tense" id="qTense"></span><span class="pron" id="qPron"></span><span class="gloss" id="qGloss"></span></div>
+    <form class="answer" id="ansForm" autocomplete="off">
+      <input id="ans" dir="rtl" lang="he" spellcheck="false" autocapitalize="off" autocorrect="off" placeholder="…">
+      <button type="submit" id="ansBtn">Check</button>
+    </form>
+    <div class="feedback" id="fb"></div>
+    <div class="hintline" id="hintline">Press <b>Enter</b> to check · no Hebrew keyboard? Just type on your English keys — they map to the standard Israeli layout.</div>
+  </div>
+  <div class="kb" id="kb"></div>
+</section>
+
+<!-- RESULTS -->
+<section id="v-results" class="hidden">
+  <div class="panel">
+    <div class="res-top">
+      <div class="score" id="rScore"></div>
+      <div class="sub" id="rSub"></div>
+      <div class="best hidden" id="rBest"></div>
+    </div>
+    <div class="res-actions">
+      <button class="big blue" id="againBtn">Play again</button>
+      <button class="big" id="missedBtn">Practice my mistakes</button>
+      <button class="ghost" id="setupBtn">Change settings</button>
+    </div>
+  </div>
+  <div class="panel" id="missedPanel">
+    <h2>Review</h2>
+    <table class="missed"><thead><tr><th>Verb</th><th>Tense</th><th>Pronoun</th><th style="text-align:right">You wrote</th><th style="text-align:right">Correct</th></tr></thead><tbody id="missedBody"></tbody></table>
+  </div>
+</section>
+
+<!-- CHARTS -->
+<section id="v-charts" class="hidden">
+  <div class="panel">
+    <div class="chartsel"><select id="chartSel"></select><button class="mini" id="chartPractice">Practice just this verb ▸</button></div>
+    <div id="chartOut"></div>
+    <p class="note">Spellings use modern unvocalized Hebrew (ktiv male), as you'd see it in Israel; common alternate spellings are accepted too. In the future and imperative, everyday Hebrew uses the masculine plural form for the feminine plural; the formal -nah forms are shown greyed out and are only drilled if you turn on "Formal feminine plural".</p>
+  </div>
+</section>
+<footer class="note foot">Forms are generated by rule from each verb's root and binyan, then spot-checked against <a href="https://en.wiktionary.org" target="_blank" rel="noopener">Wiktionary</a> (text available under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>). Found a mistake? Please tell us.</footer>
+</div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
