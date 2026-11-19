@@ -13,9 +13,9 @@ export function initState() {
     binyanim: new Set(known.length ? known : DEFAULT_BINYANIM),
     tenses: new Set((saved.tenses || DEFAULT_TENSES).filter(id => DRILLS.some(d => d.id === id))),
     time: saved.time ?? 120, count: saved.count ?? 20,
-    english: saved.english ?? true, root: saved.root ?? false, kb: saved.kb ?? true, lenient: saved.lenient ?? false, formal: saved.formal ?? false, vowels: ["off", "vowels", "translit", "both"].includes(saved.vowels) ? saved.vowels : "off",
+    english: saved.english ?? true, root: saved.root ?? false, kb: saved.kb ?? true, lenient: saved.lenient ?? false, formal: saved.formal ?? false, tl: saved.tl ?? false, vowels: ["off", "vowels", "translit", "both"].includes(saved.vowels) ? saved.vowels : "off",
   });
 }
 export function saveSettings() {
-  store.set(SETTINGS_KEY, { binyanim: [...S.binyanim], tenses: [...S.tenses], time: S.time, count: S.count, english: S.english, root: S.root, kb: S.kb, lenient: S.lenient, formal: S.formal, vowels: S.vowels });
+  store.set(SETTINGS_KEY, { binyanim: [...S.binyanim], tenses: [...S.tenses], time: S.time, count: S.count, english: S.english, root: S.root, kb: S.kb, lenient: S.lenient, formal: S.formal, vowels: S.vowels, tl: S.tl });
 }

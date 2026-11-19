@@ -1,6 +1,6 @@
 // The practice game: question flow, scoring, timer.
 import { $, rand } from "./util.js";
-import { S } from "./state.js";
+import { S, saveSettings } from "./state.js";
 import { drillById, prompt, answers, cue, vocalisedFor } from "./drills.js";
 import { pronHtml } from "./pron.js";
 import { transliterateAll } from "./translit.js";
@@ -101,9 +101,18 @@ function settle(ok, val) {
     $("ansBtn").textContent = "Next"; updateHud();
     if (isDone()) setTimeout(() => { if (G.answered) $("ansBtn").textContent = "Results"; }, 10);
   }
-  const pr = pronHtml(vocalisedFor(G.cur)); if (pr) $("fb").insertAdjacentHTML("beforeend", `<span class="pron-line">${pr}</span>`);
+  showPron();
   a.focus();
 }
+/** Line under a revealed answer: vowels follow the setting; transliteration follows the "Show transliteration" button. */
+function showPron() {
+  $("fb").querySelector(".pron-line")?.remove();
+  if (!G || !G.answered || G.grading) return;
+  const vow = S.vowels === "vowels" || S.vowels === "both";
+  const mode = vow && S.tl ? "both" : vow ? "vowels" : S.tl ? "translit" : "off";
+  const pr = pronHtml(vocalisedFor(G.cur), mode); if (pr) $("fb").insertAdjacentHTML("beforeend", `<span class="pron-line">${pr}</span>`);
+}
+function syncTlBtn() { $("tlBtn").textContent = S.tl ? "Hide transliteration" : "Show transliteration"; }
 const isDone = () => G.count && G.total >= G.count;
 
 export function finish() {
@@ -116,4 +125,6 @@ export function wireGame() {
   $("ansForm").onsubmit = e => { e.preventDefault(); if (G.grading) return; if (G.answered && isDone()) { finish(); return; } check(); };
   $("ans").addEventListener("input", e => { if (G && G.cur && isMeaning(G.cur)) return; const el = e.target, m = mapKeys(el.value); if (m !== el.value) el.value = m; });
   $("quitBtn").onclick = () => finish();
+  $("tlBtn").onclick = () => { S.tl = !S.tl; saveSettings(); syncTlBtn(); showPron(); $("ans").focus(); };
+  syncTlBtn();
 }
