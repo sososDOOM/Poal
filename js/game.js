@@ -44,6 +44,7 @@ function next() {
   if (G.queue) { q = G.queue.shift(); if (!q) return finish(); }
   else { let tries = 0; do { q = rand(G.items); tries++; } while (G.cur && q.v === G.cur.v && q.t === G.cur.t && q.pi === G.cur.pi && tries < 10); }
   G.cur = q; G.answered = false;
+  $("tlBtn").closest(".tlrow").classList.add("hidden");
   const p = prompt(q), drill = drillById(q.t), c = cue(q, S);
   $("qInf").textContent = c.main;
   setTip($("qInf"), q);
@@ -93,14 +94,13 @@ function settle(ok, val) {
   if (ok) {
     G.correct++; G.streak++; G.best = Math.max(G.best, G.streak); a.classList.add("good");
     $("fb").innerHTML = `<span class="ok">✓ Correct</span>` + (meaning ? ` <span class="corr en">${esc(main)}</span>` : norm(val) !== norm(main) ? ` <span class="corr">${main}</span>` : "");
-    updateHud();
-    setTimeout(() => { if (!G || G.over || !G.answered) return; isDone() ? finish() : next(); }, 650);
+    $("fb").insertAdjacentHTML("beforeend", `<span class="hint">Press Enter to continue</span>`);
   } else {
     G.streak = 0; a.classList.add("bad"); G.missed.push({ q: G.cur, yours: val });
     $("fb").innerHTML = `<span class="no">✗</span> Correct answer: <span class="corr${meaning ? " en" : ""}">${esc(main)}</span><span class="hint">Press Enter to continue</span>`;
-    $("ansBtn").textContent = "Next"; updateHud();
-    if (isDone()) setTimeout(() => { if (G.answered) $("ansBtn").textContent = "Results"; }, 10);
   }
+  $("ansBtn").textContent = isDone() ? "Results" : "Next"; updateHud();
+  $("tlBtn").closest(".tlrow").classList.remove("hidden"); // transliteration button only after answering
   showPron();
   a.focus();
 }
